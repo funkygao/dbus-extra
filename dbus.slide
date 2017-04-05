@@ -1,0 +1,27 @@
+DBus
+distributed data bus
+10 Apr 2017
+Tags: databus, pipeline, cluster
+
+Funky Gao
+funky.gao@gmail.com
+https://github.com/funkygao/dbus
+
+* What is dbus?
+
+logstash + flume + nifi + canal + camal
+
+* Why dbus?
+
+- Delivery Guarantee
+- Distributed Deployment
+- Data Provenance
+
+
+* Architecture
+
+* Key components
+
+- batcher
+- cluster
+- ack
