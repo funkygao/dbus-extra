@@ -5,23 +5,59 @@ Tags: databus, pipeline, cluster
 
 Funky Gao
 funky.gao@gmail.com
-https://github.com/funkygao/dbus
-
-* What is dbus?
-
-logstash + flume + nifi + canal + camal
+https://github.com/ffan/dbus
 
 * Why dbus?
 
-- Delivery Guarantee
-- Distributed Deployment
-- Data Provenance
+logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, canal, storm, yahoo pipes(dead)
 
+- Delivery Guarantee
+- Data Provenance
+- Cluster
+
+* Use Case
+
+- replace canal
+- multiple DC kafka mirror
+- delayed message scheduler
+- webhook worker
 
 * Architecture
 
+- dbc
+- dbusd
+- kguard
+
+* dbc
+
+.image assets/dbc.png _ 1000
+
+* kguard
+
+.image assets/dbus1.png _ 1000
+
+* kguard
+
+.image assets/dbus2.png _ 1000
+
+* Plugin
+
+.code play/input.go
+
 * Key components
 
+- rc recycle
 - batcher
 - cluster
-- ack
+
+* rc recycle
+
+.image assets/router.png _ 1000
+
+* batcher
+
+.image assets/batcher.png _ 1000
+
+* cluster
+
+.image assets/cluster.png _ 1000
