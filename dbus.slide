@@ -9,6 +9,8 @@ https://github.com/ffan/dbus
 
 * Why dbus?
 
+* Why dbus?
+
 logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, canal, storm, yahoo pipes(dead)
 
 - Delivery Guarantee
@@ -17,10 +19,15 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 
 * Use Case
 
+* Use Case
+
 - replace canal
 - multiple DC kafka mirror
-- delayed message scheduler
-- webhook worker
+- and more
+
+* Performance
+
+* Architecture
 
 * Architecture
 
@@ -30,7 +37,7 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 
 * dbc
 
-.image assets/dbc.png _ 1000
+.image assets/dbc.png _ 900
 
 * kguard
 
@@ -44,7 +51,9 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 
 .code play/input.go
 
-* Key components
+* Key Point
+
+* Key Point
 
 - rc recycle
 - batcher
@@ -52,7 +61,7 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 
 * rc recycle
 
-.image assets/router.png _ 1000
+.image assets/router.png _ 900
 
 * batcher
 
@@ -60,4 +69,5 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 
 * cluster
 
-.image assets/cluster.png _ 1000
+.image assets/cluster.png _ 900
+
