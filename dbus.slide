@@ -27,6 +27,8 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 
 * Performance
 
+.play play/benchmark_chan.go /func.benchmarkChanInt/,/} \/\//
+
 * Architecture
 
 * Architecture
@@ -71,3 +73,8 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 
 .image assets/cluster.png _ 900
 
+* cluster
+
+.image assets/participant.png 270 _
+
+.image assets/resource.png  270 _
