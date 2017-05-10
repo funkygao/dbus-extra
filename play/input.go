@@ -10,7 +10,7 @@ func (this *MockInput) Run(r engine.InputRunner, h engine.PluginHelper) error {
 
 		case pack := <-r.Exchange().InChan()
 			pack.Payload = model.Bytes(`hello world!`)
-			r.Exchange().Inject(pack)
+			r.Exchange().Emit(pack)
 		}
 	}
 }

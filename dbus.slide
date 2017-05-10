@@ -1,17 +1,22 @@
 DBus
 distributed data bus
-10 Apr 2017
 Tags: databus, pipeline, cluster
 
-Funky Gao
+gaopeng27
 funky.gao@gmail.com
 https://github.com/ffan/dbus
 
-* Why dbus?
+* Talk Outline
+
+- dbus
+- online schema change
+- internals
 
 * Why dbus?
 
-logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, canal, storm, yahoo pipes(dead)
+* Why dbus?
+
+logstash, flume, nifi, beats, camel, kettle, facebook flux, google cloud dataflow, canal, storm, yahoo pipes(dead)
 
 - Delivery Guarantee
 - Data Provenance
@@ -23,19 +28,17 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 
 - replace canal
 - multiple DC kafka mirror
+- MySQL online schema change
 - and more
 
-* Performance
+* Ecosystem
 
-.play play/benchmark_chan.go /func.benchmarkChanInt/,/} \/\//
-
-* Architecture
-
-* Architecture
+* Ecosystem
 
 - dbc
 - dbusd
 - kguard
+- web console?
 
 * dbc
 
@@ -48,6 +51,70 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 * kguard
 
 .image assets/dbus2.png _ 1000
+
+* dbusd
+
+.code play/dbusd.go
+
+* Demo
+
+* Online Schema Change
+
+* OSC
+
+AFTER INSERT, AFTER UPDATE, AFTER DELETE
+
+- pt-online-schema-change
+- facebook  OSC
+- LHM
+- oak-online-alter-table
+- SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ
+
+* binlog
+
+DML -> commit -> write binlog -> ok
+
+binlog not rollbackable
+
+update -> storage engine ha_update_row -> write binlog(binlog_query)
+
+what if master update commit ok, crash before write binlog?
+
+* OSC
+
+subscribe binlog at `show master status`
+
+CREATE /* changelog table */ TABLE _tbs_c
+CREATE /* shadow table */ TABLE _tbl_s LIKE tbl
+ALTER TABLE _tbl_s STATEMENT
+
+row copy:                tbl -> _tbl_s
+capture ongoing changes: tbl -> _tbl_s
+
+执行期间，外部执行了delete from a where id=5
+如果binlog先到，那么copy rows的时候id=5的就被插入了?
+
+wait for row copy finish
+LOCK TABLES tbl WRITE
+RENAME TABLE tbl TO _tbl_old, _tbl_s TO tbl
+UNLOCK TABLES
+
+* OSC
+
+- heartbeat lag throttle
+- begin; insert; LOCK update; rollback
+- order of binlog and rows copy
+- how to tell async binlog drains
+- priority of DML and RENAME
+- LOCK/RENAME within a conn
+
+MigrationIterationRangeMaxValues=select id from (select id from a where id>=0 and id<=3001 order by id asc limit 1000) select_osc_chunk order by id desc limit 1;
+begin;
+insert /* gh-ost `a`.`a` */ ignore into `a`.`_a_gho` (`id`, `bb`, `bb1`, `bb2`, `bm`, `m`, `xm`, `b5`, `b6`)
+  (select `id`, `bb`, `bb1`, `bb2`, `bm`, `m`, `xm`, `b5`, `b6` from `a`.`a` force index (`PRIMARY`)
+     where (((`id` > ?) or ((`id` = ?))) and ((`id` < ?) or ((`id` = ?)))) lock in share mode
+  )
+commit;
 
 * Plugin
 
@@ -64,6 +131,10 @@ logstash, flume, nifi, beats, camel, kettle, zapier, google cloud dataflow, cana
 * rc recycle
 
 .image assets/router.png _ 900
+
+* Performance
+
+.play play/benchmark_chan.go /func.benchmarkChanInt/,/} \/\//
 
 * batcher
 
