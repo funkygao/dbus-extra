@@ -56,6 +56,11 @@ logstash, flume, nifi, beats, camel, kettle, facebook flux, google cloud dataflo
 
 .code play/dbusd.go
 
+* FAQ
+
+- is dbus totally data loss tolerant?
+- what if zookeeper cluster crash?
+
 * Demo
 
 * Online Schema Change
@@ -68,17 +73,6 @@ AFTER INSERT, AFTER UPDATE, AFTER DELETE
 - facebook  OSC
 - LHM
 - oak-online-alter-table
-- SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ
-
-* binlog
-
-DML -> commit -> write binlog -> ok
-
-binlog not rollbackable
-
-update -> storage engine ha_update_row -> write binlog(binlog_query)
-
-what if master update commit ok, crash before write binlog?
 
 * OSC
 
@@ -91,30 +85,12 @@ ALTER TABLE _tbl_s STATEMENT
 row copy:                tbl -> _tbl_s
 capture ongoing changes: tbl -> _tbl_s
 
-执行期间，外部执行了delete from a where id=5
-如果binlog先到，那么copy rows的时候id=5的就被插入了?
-
 wait for row copy finish
 LOCK TABLES tbl WRITE
-RENAME TABLE tbl TO _tbl_old, _tbl_s TO tbl
+RENAME TABLE tbl TO _tbl_old, _tbl_s TO tbl // conn, prio
 UNLOCK TABLES
 
-* OSC
-
-- heartbeat lag throttle
-- begin; insert; LOCK update; rollback
-- order of binlog and rows copy
-- how to tell async binlog drains
-- priority of DML and RENAME
-- LOCK/RENAME within a conn
-
-MigrationIterationRangeMaxValues=select id from (select id from a where id>=0 and id<=3001 order by id asc limit 1000) select_osc_chunk order by id desc limit 1;
-begin;
-insert /* gh-ost `a`.`a` */ ignore into `a`.`_a_gho` (`id`, `bb`, `bb1`, `bb2`, `bm`, `m`, `xm`, `b5`, `b6`)
-  (select `id`, `bb`, `bb1`, `bb2`, `bm`, `m`, `xm`, `b5`, `b6` from `a`.`a` force index (`PRIMARY`)
-     where (((`id` > ?) or ((`id` = ?))) and ((`id` < ?) or ((`id` = ?)))) lock in share mode
-  )
-commit;
+* dbus internals
 
 * Plugin
 
@@ -149,3 +125,12 @@ commit;
 .image assets/participant.png 270 _
 
 .image assets/resource.png  270 _
+
+* rebalance
+
+.image assets/rebalance1.png _ 800
+
+* rebalance
+
+.image assets/rebalance2.png _ 700
+
